@@ -5,7 +5,23 @@ class node:
 
     def __init__(self, state):
         self.state = state
-        # print(self.state)
+
+  def isSolvable(self):
+        counter = 0
+        array = [9]
+        array = list(chain.from_iterable(self.state))
+        print(array)
+        for i in range(9):
+             for j in range(i+1,9):
+                 if array[i] > 0 and array[j] > 0 and array[i] > array[j]:
+                     counter += 1
+        
+        print(counter)
+        if counter%2 == 1:
+            return False
+        else :
+            return True
+
 
     def findingChildren(self):
         row = 0
@@ -17,7 +33,6 @@ class node:
                     col = j
 
         self.children.clear()
-        # print(row,col)
 
          # move up
         if row != 2:
@@ -61,7 +76,3 @@ class node:
             n = node(child)
             n.parent = self
             self.children.append(child)
-
-
-temp = node(intialState)
-print(temp.findingChildren())
