@@ -23,8 +23,8 @@ import node
 
 class dfs:
     state = []
-    def __init__(self, state):
-        self.state = str(state)
+    # def __init__(self, state):
+    #     self.state = str(state)
         # print(self.state)
 
     def get_path(self,parent,goal):
@@ -43,7 +43,8 @@ class dfs:
             worker_file.write(f'{i+1} {temp} \n')
         worker_file.close()
     
-    def solve(self):
+    def solve(self,state):
+        self.state = str(state)
         expanded={''}
         frontier = {self.state}
         queue = [self.state]
@@ -76,8 +77,8 @@ class dfs:
 
 ## Testing ##
 
-# result = dfs(str(initialState))
-# test = result.solve()
+# result = dfs()
+# test = result.solve(initialState)
 # length_ = len(test)
 # for i in range(len(test)):
 #     print(test.pop())

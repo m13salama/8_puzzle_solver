@@ -24,8 +24,8 @@ import node
 class bfs:
     number_of_expanded_nodes = 0
     state = []
-    def __init__(self, state):
-        self.state = str(state)
+    # def __init__(self, state):
+    #     self.state = str(state)
         # print(self.state)
 
     def get_path(self,parent,goal):
@@ -44,7 +44,8 @@ class bfs:
             worker_file.write(f'{i+1} {temp} \n')
         worker_file.close()
     
-    def solve(self):
+    def solve(self,state):
+        self.state = str(state)
         expanded={''}
         frontier = {self.state}
         queue = [self.state]
@@ -75,8 +76,8 @@ class bfs:
 
 ## Testing ##
 
-# result = bfs(str(initialState))
-# test = result.solve()
+# result = bfs()
+# test = result.solve(initialState)
 # length_ = len(test)
 # for i in range(len(test)):
 #     print(test.pop())
