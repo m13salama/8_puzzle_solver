@@ -25,23 +25,24 @@ class Tile(pygame.sprite.Sprite):
             self.image.fill(BGCOLOUR)
 
     def update(self):
-        self.rect.x = self.x * TILESIZE
-        self.rect.y = self.y * TILESIZE
+        self.rect.x = self.x * TILESIZE + WIDTH/2-(GAME_SIZE * TILESIZE)/2
+        self.rect.y = self.y * TILESIZE +150
 
     def click(self, mouse_x, mouse_y):
         return self.rect.left <= mouse_x <= self.rect.right and self.rect.top <= mouse_y <= self.rect.bottom
 
+    #true --> there is tile on the right
     def right(self):
-        return self.rect.x + TILESIZE < GAME_SIZE * TILESIZE
+        return self.rect.x + TILESIZE < GAME_SIZE * TILESIZE + WIDTH/2-(GAME_SIZE * TILESIZE)/2
 
     def left(self):
-        return self.rect.x - TILESIZE >= 0
+        return self.rect.x - TILESIZE >= WIDTH/2-(GAME_SIZE * TILESIZE)/2
 
     def up(self):
-        return self.rect.y - TILESIZE >= 0
+        return self.rect.y - TILESIZE >= 150
 
     def down(self):
-        return self.rect.y + TILESIZE < GAME_SIZE * TILESIZE
+        return self.rect.y + TILESIZE < GAME_SIZE * TILESIZE +150
 
 
 class UIElement:

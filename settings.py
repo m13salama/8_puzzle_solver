@@ -4,8 +4,8 @@ import pygame
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 DARKGREY = (40, 40, 40)
-LIGHTGREY = (100, 100, 100)
-BGCOLOUR = (127,127,127)
+LIGHTGREY = (200, 200, 200)
+BGCOLOUR = (50,50,50)
 
 # game settings
 WIDTH = 700

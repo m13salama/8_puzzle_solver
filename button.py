@@ -6,7 +6,7 @@ class Button:
         #declare some variables
 		self.font = font
 		self.function = function
-		self.click_sound = pygame.mixer.Sound("blipshort1.wav")
+		self.click_sound = pygame.mixer.Sound("asserts/blipshort1.wav")
         
 		#Core attributes 
 		self.pressed = False
