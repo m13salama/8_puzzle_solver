@@ -31,8 +31,8 @@ class gamePage():
         
         """Factory Method"""  
         localizers = {   
-            "DFS": bfs,
-            "BFS": dfs,
+            "DFS": dfs,
+            "BFS": bfs,
         }   
         return localizers[input]()
 
@@ -49,8 +49,10 @@ class gamePage():
         return self.current
         
     def solve(self):
-        self.algorithm.set_initial(self.tiles_grid)
-        print(self.algorithm.solve())
+        ss = self.algorithm.solve(self.tiles_grid)
+        print(self.algorithm.number_of_expanded_nodes)
+        print(len(ss))
+        print(ss)
 
     def take_input(self):
         pass
@@ -80,8 +82,10 @@ class gamePage():
                     print("a7aaaaaaaa")
                 
                 if(event.key == pygame.K_d):
+                    print("dfs")
                     self.change_algorithm("DFS")
                 if(event.key == pygame.K_b):
+                    print("bfs")
                     self.change_algorithm("BFS")
                 if(event.key == pygame.K_a):
                     self.change_algorithm("DFS")

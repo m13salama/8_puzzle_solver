@@ -1,5 +1,8 @@
 import copy
 from itertools import chain
+
+goal = [[0,1,2],[3,4,5],[6,7,8]]
+
 class node:
     children = []
     state = []
@@ -37,13 +40,11 @@ class node:
         counter = 0
         array = [9]
         array = list(chain.from_iterable(state))
-        print(array)
         for i in range(9):
              for j in range(i+1,9):
                  if array[i] > 0 and array[j] > 0 and array[i] > array[j]:
                      counter += 1
         
-        print(counter)
         if counter%2 == 1:
             return False
         else :
@@ -61,7 +62,6 @@ class node:
                     col = j
 
         self.children.clear()
-        # print(row,col)
 
          # move up
         if row != 2:
@@ -70,7 +70,6 @@ class node:
             child[row + 1][col] = child[row][col]
             child[row][col] = temp
             child = str(child)
-            print(child)
             self.children.append(child)
 
         # move down
@@ -80,7 +79,6 @@ class node:
             child[row - 1][col] = child[row][col]
             child[row][col] = temp
             child = str(child)
-            print(child)
             self.children.append(child)
 
         # move right
@@ -90,7 +88,6 @@ class node:
             child[row][col - 1] = child[row][col]
             child[row][col] = temp
             child = str(child)
-            print(child)
             self.children.append(child)
             
 
@@ -101,6 +98,5 @@ class node:
             child[row][col + 1] = child[row][col]
             child[row][col] = temp
             child = str(child)
-            print(child)
             self.children.append(child)
 
