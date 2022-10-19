@@ -1,10 +1,25 @@
 import copy
+from itertools import chain
 class node:
     children = []
     state = []
 
+    def ValidateInput(self,intial):
+        set = {intial[0][0]}
+        for i in range(3):
+            for j in range(3):
+                if intial[i][j] >= 0 and intial[i][j] <= 8:
+                    set.add(intial[i][j])
+                else:
+                    return False
+        
+        if len(set) == 9:
+            return True
+        else:
+            return False
+        
 
-     def strTO2dArray(self,str):
+    def strTO2dArray(self,str):
         array =[]
         str = str.replace("["," ")
         str = str.replace("]"," ")
