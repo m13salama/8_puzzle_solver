@@ -1,3 +1,4 @@
+from os import wait
 import pygame
 import random
 import time
@@ -6,17 +7,22 @@ from settings import *
 from button import Button
 from bfs_search import bfs
 from dfs_search import dfs
-
+from node import node
 #class responsible for start page
 class gamePage():
     def __init__(self,screen):
         self.screen = screen
         self.font = pygame.font.Font(None,30)
-        button_solve = Button('Solve',self.font,button_width,button_height,(WIDTH/2-button_width/2,HEIGHT-150),5,self.solve)
-        button_shuffle = Button('Shuffle',self.font,button_width,button_height,(WIDTH/2-button_width-10,HEIGHT-100),5,self.shuffle_click)
-        button_reset = Button('Reset',self.font,button_width,button_height,(WIDTH/2+10,HEIGHT-100),5,self.reset)
-        self.buttons_list = [button_solve,button_shuffle,button_reset]
-        self.shuffle_time = 0
+        self.button_solve = Button('Solve',self.font,button_width,button_height,(WIDTH/2-button_width/2,HEIGHT-100),5,self.solve)
+        self.button_shuffle = Button('Shuffle',self.font,button_width,button_height,(WIDTH/2-button_width-10,HEIGHT-50),5,self.shuffle_click)
+        self.button_reset = Button('Reset',self.font,button_width,button_height,(WIDTH/2+5,HEIGHT-50),5,self.reset)
+        self.button_next = Button('Next',self.font,button_width,button_height,(WIDTH/2+button_width+7.5,550),5,self.reset)
+        self.button_previous = Button('Prev',self.font,button_width,button_height,(WIDTH/2-2*button_width-7.5,550),5,self.reset)
+        self.button_resume = Button('Resume',self.font,button_width,button_height,(WIDTH/2+2.5,550),5,self.resume)
+        self.button_pause = Button('Pause',self.font,button_width,button_height,(WIDTH/2-button_width-2.5,550),5,self.pause)
+        self.buttons_list = [self.button_solve,self.button_shuffle,self.button_reset,self.button_previous,self.button_next,self.button_pause,self.button_resume]
+        self.shuffle_counter = 0
+        self.show_time = 0
         self.start_shuffle = False
         self.previous_choice = ""
         self.start_game = False
@@ -24,8 +30,11 @@ class gamePage():
         self.elapsed_time = 0
         self.current = False
         self.win = False
+        self.start_show_result = False
+        self.path = [[[]]]
         self.high_score = float(self.get_high_scores()[0])
         self.algorithm = bfs()
+        self.node = node()
 
     def Factory(self, input ="DFS"):   
         
@@ -49,23 +58,27 @@ class gamePage():
         return self.current
         
     def solve(self):
-        ss = self.algorithm.solve(self.tiles_grid)
+        self.path = self.algorithm.solve(self.tiles_grid)
+        self.start_show_result = True
         print(self.algorithm.number_of_expanded_nodes)
-        print(len(ss))
-        print(ss)
+        print(len(self.path))
+        print(self.path)
 
     def take_input(self):
         pass
     
-    def show_results(self):
-        pass
-    
+    def pause(self):
+        self.start_show_result = False
+
+    def resume(self):
+        self.start_show_result = True
+
     def change_algorithm(self,algo):
         self.algorithm = self.Factory(algo)
 
     def shuffle_click(self):
         self.win = False
-        self.shuffle_time = 0
+        self.shuffle_counter = 0
         self.start_shuffle = True 
 
     def reset(self):
@@ -88,6 +101,7 @@ class gamePage():
                     print("bfs")
                     self.change_algorithm("BFS")
                 if(event.key == pygame.K_a):
+                    print("A*")
                     self.change_algorithm("DFS")
             
             for button in self.buttons_list:
@@ -217,11 +231,19 @@ class gamePage():
                 self.start_timer = False
             self.elapsed_time = time.time() - self.timer
 
+        if self.start_show_result:
+            if(len(self.path) != 0 and (time.time()-self.show_time) >= 0.5):
+                self.tiles_grid = self.node.strTO2dArray(self.path.pop())
+                self.draw_tiles()
+                self.show_time = time.time()
+            elif(len(self.path) == 0):
+                self.start_show_result = False
+
         if self.start_shuffle:
             self.shuffle()
             self.draw_tiles()
-            self.shuffle_time += 1
-            if self.shuffle_time > 120:
+            self.shuffle_counter += 1
+            if self.shuffle_counter > 120:
                 self.start_shuffle = False
                 self.start_game = True
                 self.start_timer = True
@@ -255,8 +277,8 @@ class gamePage():
         UIElement(10, 180, "%.3f" % self.elapsed_time).draw(self.screen)
         UIElement(10, 220, "BEST:").draw(self.screen)
         UIElement(10, 250, "%.3f" % (self.high_score if self.high_score > 0 else 0)).draw(self.screen)
-        UIElement(10, 550, "Press A for A*, D for dfs, B for bfs").draw(self.screen)
-        if(self.win):
-            UIElement(10, 600, "YOU WIN 555555555 !!!!!").draw(self.screen)
+        # UIElement(10, 550, "Press A for A*, D for dfs, B for bfs").draw(self.screen)
+        # if(self.win):
+        #     UIElement(10, 600, "YOU WIN 555555555 !!!!!").draw(self.screen)
         pygame.display.flip()
 
