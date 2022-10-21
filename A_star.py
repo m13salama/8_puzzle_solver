@@ -8,16 +8,18 @@ import math
 from typing import final
 
 class A_star_search:
-    goal_state = [[0,1,2],
-                  [3,4,5],
-                  [6,7,8]]
+    def __init__(self):
+        
+        self.goal_state = [[0,1,2],
+                           [3,4,5],
+                           [6,7,8]]
 
-    heuristic = ""  
-    search_depth = 0 
-    number_of_steps=0    
-    parent = []      
+        self.heuristic = ""  
+        self.search_depth = 0 
+        self.number_of_nodes_expanded=0    
+        self.parent = []      
 
-    def In_frontier(frontier,state):
+    def In_frontier(self,frontier,state):
         for i in range (len(frontier)):
             cost,g,cur_state = frontier[i]
             if(cur_state == state): return TRUE
@@ -25,7 +27,7 @@ class A_star_search:
         return FALSE    
 
 
-    def get_children(state):
+    def get_children(self,state):
         temp_state = copy.deepcopy(state)
         res = []
         for i in range(3):
@@ -61,22 +63,22 @@ class A_star_search:
 
                     return res 
 
-    def set_heuristic(type):
+    def set_heuristic(self,type):
         if(type != "manhattan" and type != "euclidean"): 
             print("ERROR!")
             exit()
-        A_star_search.heuristic = type
+        self.heuristic = type
 
-    def get_heuristic():
-        return A_star_search.heuristic
+    def get_heuristic(self):
+        return self.heuristic
 
-    def working_heuristic(state):
+    def working_heuristic(self,state):
         res = 0
-        if(A_star_search.get_heuristic() == "manhattan"): res = A_star_search.heuristic_manhattan(state)
-        elif(A_star_search.get_heuristic() == "euclidean"): res = A_star_search.heuristic_euclidean(state)
+        if(self.get_heuristic() == "manhattan"): res = self.heuristic_manhattan(state)
+        elif(self.get_heuristic() == "euclidean"): res = self.heuristic_euclidean(state)
         return res
 
-    def heuristic_manhattan(state):
+    def heuristic_manhattan(self,state):
         res =0
         for i in range(3):
             for j in range(3):
@@ -91,7 +93,7 @@ class A_star_search:
                 if(state[i][j] == 8): res += abs(i-2) + abs(j-2)
         return res     
 
-    def heuristic_euclidean(state):    
+    def heuristic_euclidean(self,state):    
         res =0
         for i in range(3):
             for j in range(3):
@@ -106,27 +108,27 @@ class A_star_search:
                 if(state[i][j] == 8): res += math.sqrt((i-2)**2 + (j-2)**2)
         return res  
 
-    def get_final_path():
+    def get_final_path(self):
         final_state = []
-        cur_state = A_star_search.goal_state
+        cur_state = self.goal_state
         while(cur_state != 0):
-            final_state.insert(0,str(cur_state))
-            cur_state = A_star_search.get_parent(cur_state)
+            final_state.append(str(cur_state))
+            cur_state = self.get_parent(cur_state)
         return final_state
             
 
-    def get_parent(state):  
-        for i in range(len(A_star_search.parent)):
-            s,p = A_star_search.parent[i]
+    def get_parent(self,state):  
+        for i in range(len(self.parent)):
+            s,p = self.parent[i]
             if(state == s): return p     
 
-    def solve(initial_state):
+    def solve(self,initial_state):
         
-        cost = A_star_search.working_heuristic(initial_state)
+        cost = self.working_heuristic(initial_state)
         g=0
         frontier = []
         heapq.heappush(frontier,(cost,g,initial_state))
-        A_star_search.parent.append((initial_state,0))
+        self.parent.append((initial_state,0))
         explored = set()
 
         while(len(frontier) != 0):
@@ -134,36 +136,31 @@ class A_star_search:
             cost,g,state = heapq.heappop(frontier)
             print("current state : ",state)
             explored.add(str(state))
-            if(state == A_star_search.goal_state):
-                return state,len(explored),cost
+            if(state == self.goal_state):
+                self.number_of_nodes_expanded = len(explored)
+                return self.get_final_path()
 
             g+=1
-            if(g > A_star_search.search_depth): A_star_search.search_depth = g
-            children = A_star_search.get_children(state) 
+            if(g > self.search_depth): self.search_depth = g
+            children = self.get_children(state) 
             print("children of the current state to into the frontier: ") 
             for i in range (len(children)):
-                if((A_star_search.In_frontier(frontier,children[i]) == FALSE) and not(str(children[i]) in explored)):
-                    cost = g + A_star_search.working_heuristic(children[i])
-                    A_star_search.parent.append((children[i],state))
+                if((self.In_frontier(frontier,children[i]) == FALSE) and not(str(children[i]) in explored)):
+                    cost = g + self.working_heuristic(children[i])
+                    self.parent.append((children[i],state))
                     print(children[i], "cost : " , cost)
                     heapq.heappush(frontier,(cost,g,children[i]))
 
 
-        
-
-    
-
-
-        
-
-initial_state = [[1,2,5],
-                [3,4,0],
-                [6,7,8]]              
+initial_state = [[7,6,2],
+                [5,4,0],
+                [1,8,3]]              
                 
-                
-A_star_search.set_heuristic("manhattan")
-res , number_of_nodes_expanded ,cost = A_star_search.solve(initial_state)
-print("number of nodes expanded : ", number_of_nodes_expanded)
-print("search depth : ", A_star_search.search_depth)
-print("cost : ", cost)
-print("final path : ", A_star_search.get_final_path())
+test = A_star_search()                
+test.set_heuristic("manhattan")
+print("final path : ",test.solve(initial_state))
+print("length : " , len(test.solve(initial_state)))
+# print("number of nodes expanded : ", test.number_of_nodes_expanded)
+# print("search depth : ", test.search_depth)
+
+# print("final path : ", test.get_final_path())
