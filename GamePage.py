@@ -67,6 +67,7 @@ class gamePage():
         return self.current
         
     def solve(self):
+        print(self.tiles_grid)
         self.elapsed_time = time.time()
         self.path = self.algorithm.solve(self.tiles_grid)
         self.elapsed_time = time.time()-self.elapsed_time
