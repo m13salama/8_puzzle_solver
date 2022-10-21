@@ -8,19 +8,24 @@ from button import Button
 from bfs_search import bfs
 from dfs_search import dfs
 from node import node
+from A_star import A_star_search
+
 #class responsible for start page
 class gamePage():
     def __init__(self,screen):
         self.screen = screen
         self.font = pygame.font.Font(None,30)
+
         self.button_solve = Button('Solve',self.font,button_width,button_height,(WIDTH/2-button_width/2,HEIGHT-100),5,self.solve)
         self.button_shuffle = Button('Shuffle',self.font,button_width,button_height,(WIDTH/2-button_width-10,HEIGHT-50),5,self.shuffle_click)
         self.button_reset = Button('Reset',self.font,button_width,button_height,(WIDTH/2+5,HEIGHT-50),5,self.reset)
-        self.button_next = Button('Next',self.font,button_width,button_height,(WIDTH/2+button_width+7.5,550),5,self.reset)
-        self.button_previous = Button('Prev',self.font,button_width,button_height,(WIDTH/2-2*button_width-7.5,550),5,self.reset)
+        self.button_next = Button('Next',self.font,button_width,button_height,(WIDTH/2+button_width+7.5,550),5,self.next)
+        self.button_previous = Button('Prev',self.font,button_width,button_height,(WIDTH/2-2*button_width-7.5,550),5,self.previous)
         self.button_resume = Button('Resume',self.font,button_width,button_height,(WIDTH/2+2.5,550),5,self.resume)
         self.button_pause = Button('Pause',self.font,button_width,button_height,(WIDTH/2-button_width-2.5,550),5,self.pause)
-        self.buttons_list = [self.button_solve,self.button_shuffle,self.button_reset,self.button_previous,self.button_next,self.button_pause,self.button_resume]
+        self.buttons_list = [self.button_solve,self.button_shuffle,self.button_reset]
+        self.result_buttons_list = [self.button_pause,self.button_next,self.button_previous,self.button_resume]
+
         self.shuffle_counter = 0
         self.show_time = 0
         self.start_shuffle = False
@@ -31,7 +36,10 @@ class gamePage():
         self.current = False
         self.win = False
         self.start_show_result = False
+        self.pause_show_result = False
+        self.show_result_buttons = False
         self.path = [[[]]]
+        self.current_step = -1
         self.high_score = float(self.get_high_scores()[0])
         self.algorithm = bfs()
         self.node = node()
@@ -42,6 +50,7 @@ class gamePage():
         localizers = {   
             "DFS": dfs,
             "BFS": bfs,
+            "A*" : A_star_search,
         }   
         return localizers[input]()
 
@@ -58,20 +67,37 @@ class gamePage():
         return self.current
         
     def solve(self):
+        self.elapsed_time = time.time()
         self.path = self.algorithm.solve(self.tiles_grid)
-        self.start_show_result = True
-        print(self.algorithm.number_of_expanded_nodes)
-        print(len(self.path))
-        print(self.path)
+        self.elapsed_time = time.time()-self.elapsed_time
+        self.start_game = False
+        self.resume()
+        self.show_result_buttons = True
+        print("expanded nodes: ", self.algorithm.number_of_expanded_nodes)
+        print("path length: ",len(self.path))
+        self.button_solve.disable()
 
     def take_input(self):
         pass
-    
+
+    def next(self):
+        pass
+
+    def previous(self):
+        pass
+
     def pause(self):
-        self.start_show_result = False
+        self.pause_show_result = True
+        self.result_buttons_list[0].disable()
+        for button in range(1,4):
+            self.result_buttons_list[button].enable()
 
     def resume(self):
         self.start_show_result = True
+        self.pause_show_result = False
+        self.result_buttons_list[0].enable()
+        for button in range(1,4):
+            self.result_buttons_list[button].disable()
 
     def change_algorithm(self,algo):
         self.algorithm = self.Factory(algo)
@@ -83,6 +109,7 @@ class gamePage():
 
     def reset(self):
         self.win = False
+        self.button_solve.enable()
         self.new()
 
     def events(self):
@@ -102,11 +129,19 @@ class gamePage():
                     self.change_algorithm("BFS")
                 if(event.key == pygame.K_a):
                     print("A*")
-                    self.change_algorithm("DFS")
+                    self.change_algorithm("A*")
+                if(event.key == pygame.K_m):
+                    self.algorithm.set_heuristic("manhattan")
+                if(event.key == pygame.K_e):
+                    self.algorithm.set_heuristic("euclidean")
             
             for button in self.buttons_list:
                 button.check_click()
-            
+
+            if(self.start_show_result):
+                for button in self.result_buttons_list:
+                    button.check_click()
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 for row, tiles in enumerate(self.tiles):
@@ -160,6 +195,8 @@ class gamePage():
     
     def shuffle(self):
         possible_moves = []
+        self.start_show_result = False
+        self.button_solve.enable()
         for row, tiles in enumerate(self.tiles):
             for col, tile in enumerate(tiles):
                 if tile.text == "empty":
@@ -231,13 +268,12 @@ class gamePage():
                 self.start_timer = False
             self.elapsed_time = time.time() - self.timer
 
-        if self.start_show_result:
-            if(len(self.path) != 0 and (time.time()-self.show_time) >= 0.5):
-                self.tiles_grid = self.node.strTO2dArray(self.path.pop())
+        if self.start_show_result and not self.pause_show_result:
+            if(len(self.path) >= self.current_step*-1 and (time.time()-self.show_time) >= 0.5):
+                self.tiles_grid = self.node.strTO2dArray(self.path[self.current_step])
+                self.current_step -= 1
                 self.draw_tiles()
                 self.show_time = time.time()
-            elif(len(self.path) == 0):
-                self.start_show_result = False
 
         if self.start_shuffle:
             self.shuffle()
@@ -270,6 +306,11 @@ class gamePage():
         self.screen.fill(BGCOLOUR)
         for button in self.buttons_list:
             button.draw(self.screen)
+        
+        if(self.show_result_buttons):
+            for button in self.result_buttons_list:
+                button.draw(self.screen)
+        
         self.create_text()
         self.all_sprites.draw(self.screen)
         self.draw_grid()
@@ -277,6 +318,12 @@ class gamePage():
         UIElement(10, 180, "%.3f" % self.elapsed_time).draw(self.screen)
         UIElement(10, 220, "BEST:").draw(self.screen)
         UIElement(10, 250, "%.3f" % (self.high_score if self.high_score > 0 else 0)).draw(self.screen)
+        if(self.start_show_result):
+            UIElement(10, 600, "No. of steps: %d" % len(self.path)).draw(self.screen)
+            UIElement(10, 630, "No. of expanded nodes: %d" % self.algorithm.number_of_expanded_nodes).draw(self.screen)
+            UIElement(10, 660, "Search depth: %d" % self.algorithm.depth_of_search_tree).draw(self.screen)
+            UIElement(10, 690, "YOU WIN 555555555 !!!!!").draw(self.screen)
+
         # UIElement(10, 550, "Press A for A*, D for dfs, B for bfs").draw(self.screen)
         # if(self.win):
         #     UIElement(10, 600, "YOU WIN 555555555 !!!!!").draw(self.screen)

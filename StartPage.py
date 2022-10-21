@@ -65,10 +65,12 @@ One cell of the frame is always empty thus making it possible to move an adjacen
 The object of the puzzle is to place the tiles in order by making sliding moves that use the empty space.\n\
 The n-puzzle is a classical problem for modelling algorithms involving heuristics."
 
-        puzzle_image = pygame.image.load("asserts/puzzle.jpg")
+        # show example image
+        puzzle_image = pygame.image.load("asserts/8-puzzle.png")
+        puzzle_image = pygame.transform.scale(puzzle_image, (puzzle_image.get_width()*0.9, puzzle_image.get_height()*0.9))
         imagerect = puzzle_image.get_rect()
         puzzle_image.convert()
-        self.screen.blit(puzzle_image, (WIDTH/2-puzzle_image.get_width()/2,HEIGHT-puzzle_image.get_height()-200))
+        self.screen.blit(puzzle_image, (WIDTH/2-puzzle_image.get_width()/2,HEIGHT-puzzle_image.get_height()-175))
 
 
         text_rules = font_rules.render("Rules:", True, (0,0,0))

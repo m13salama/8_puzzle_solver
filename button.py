@@ -4,6 +4,7 @@ import pygame, sys
 class Button:
 	def __init__(self,text,font,width,height,pos,elevation,function):
         #declare some variables
+		self.enabled = True
 		self.font = font
 		self.function = function
 		self.click_sound = pygame.mixer.Sound("asserts/blipshort1.wav")
@@ -11,6 +12,8 @@ class Button:
 		#Core attributes 
 		self.pressed = False
 		self.elevation = elevation
+		self.elevation_enable = elevation
+		self.elevation_disable = 2
 		self.dynamic_elecation = elevation
 		self.original_y_pos = pos[1]
 
@@ -46,10 +49,8 @@ class Button:
 
 	def check_click(self):
 		mouse_pos = pygame.mouse.get_pos()
-		if self.top_rect.collidepoint(mouse_pos):
-			# self.draw(self.screen)
+		if self.top_rect.collidepoint(mouse_pos) and self.enabled:
 			self.top_color = '#D74B4B'
-			# self.hover_sound.play()
             
 			if pygame.mouse.get_pressed()[0]:
 				self.dynamic_elecation = 0
@@ -62,10 +63,19 @@ class Button:
 					self.click_sound.play()
 					self.pressed = False
 					self.change_text(self.text)
-		else:
+		elif(self.enabled):
 			self.dynamic_elecation = self.elevation
 			self.top_color = '#475F77'
 
+	def enable(self):
+		self.enabled = True
+		self.top_color = '#475F77'
+		self.elevation = self.elevation_enable
+
+	def disable(self):
+		self.enabled = False
+		self.top_color = '#203243'
+		self.elevation = self.elevation_disable
 
 pygame.init()
 

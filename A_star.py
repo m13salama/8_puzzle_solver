@@ -1,4 +1,3 @@
-from asyncio.windows_events import NULL
 from cmath import sqrt
 import heapq
 from operator import truediv
@@ -22,7 +21,7 @@ class A_star_search:
         return FALSE    
 
 
-    def get_children(state):
+    def get_children(self, state):
         temp_state = copy.deepcopy(state)
         res = []
         for i in range(3):
@@ -58,7 +57,7 @@ class A_star_search:
 
                     return res 
 
-    def set_heuristic(type):
+    def set_heuristic(self, type):
         A_star_search.heuristic = type
 
     def get_heuristic():
@@ -71,7 +70,7 @@ class A_star_search:
         else: return "ERROR"
         return res
 
-    def heuristic_manhattan(state):
+    def heuristic_manhattan(self, state):
         res =0
         for i in range(3):
             for j in range(3):
@@ -86,7 +85,7 @@ class A_star_search:
                 if(state[i][j] == 8): res += abs(i-2) + abs(j-2)
         return res     
 
-    def heuristic_euclidean(state):    
+    def heuristic_euclidean(self, state):    
         res =0
         for i in range(3):
             for j in range(3):
@@ -101,7 +100,7 @@ class A_star_search:
                 if(state[i][j] == 8): res += sqrt((i-2)**2 + (j-2)**2)
         return res  
 
-    def solve(initial_state):
+    def solve(self, initial_state):
         
         cost = A_star_search.working_heuristic(initial_state)
         frontier = []
@@ -127,7 +126,7 @@ class A_star_search:
                     heapq.heappush(frontier,(cost,children[i]))
 
 
-        return NULL 
+        return [] 
 
     
 
@@ -139,10 +138,10 @@ initial_state = [[1,2,5],
                 [6,7,8]]              
                 
                 
-# print(heuristic_manhattan(initial_state,goal_state))
-A_star_search.set_heuristic("manhattan")
-res , number_of_nodes_expanded = A_star_search.solve(initial_state)
-print(res , number_of_nodes_expanded)
-print(A_star_search.search_depth)
+# # print(heuristic_manhattan(initial_state,goal_state))
+# A_star_search.set_heuristic("manhattan")
+# res , number_of_nodes_expanded = A_star_search.solve(initial_state)
+# print(res , number_of_nodes_expanded)
+# print(A_star_search.search_depth)
 
 # A_star_seararch_search(initial_state,goal_state)
