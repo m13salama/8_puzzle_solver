@@ -15,9 +15,10 @@ class A_star_search:
                            [6,7,8]]
 
         self.heuristic = ""  
-        self.search_depth = 0 
-        self.number_of_nodes_expanded=0    
-        self.parent = []      
+        self.depth_of_search_tree = 0 
+        self.number_of_expanded_nodes=0    
+        self.parent = []
+        self.set_heuristic("manhattan")      
 
     def In_frontier(self,frontier,state):
         for i in range (len(frontier)):
@@ -134,33 +135,37 @@ class A_star_search:
         while(len(frontier) != 0):
             
             cost,g,state = heapq.heappop(frontier)
-            print("current state : ",state)
+            # print("current state : ",state)
             explored.add(str(state))
             if(state == self.goal_state):
-                self.number_of_nodes_expanded = len(explored)
+                self.number_of_expanded_nodes = len(explored)
                 return self.get_final_path()
 
             g+=1
-            if(g > self.search_depth): self.search_depth = g
+            if(g > self.depth_of_search_tree): self.depth_of_search_tree = g
             children = self.get_children(state) 
-            print("children of the current state to into the frontier: ") 
+            # print("children of the current state to into the frontier: ") 
             for i in range (len(children)):
                 if((self.In_frontier(frontier,children[i]) == FALSE) and not(str(children[i]) in explored)):
                     cost = g + self.working_heuristic(children[i])
                     self.parent.append((children[i],state))
-                    print(children[i], "cost : " , cost)
+                    # print(children[i], "cost : " , cost)
                     heapq.heappush(frontier,(cost,g,children[i]))
+        
+        return []
 
 
-initial_state = [[7,6,2],
-                [5,4,0],
-                [1,8,3]]              
+# initial_state = [[8,7,6],
+#                 [2,3,4],
+#                 [5,0,1]]              
                 
-test = A_star_search()                
-test.set_heuristic("manhattan")
-print("final path : ",test.solve(initial_state))
-print("length : " , len(test.solve(initial_state)))
-# print("number of nodes expanded : ", test.number_of_nodes_expanded)
-# print("search depth : ", test.search_depth)
+# test = A_star_search()                
+# test.set_heuristic("manhattan")
+# ss =test.solve(initial_state)
+# print("final path : ",ss)
+# print("length : " , len(ss))
+
+# print("number of nodes expanded : ", test.number_of_expanded_nodes)
+# print("search depth : ", test.depth_of_search_tree)
 
 # print("final path : ", test.get_final_path())

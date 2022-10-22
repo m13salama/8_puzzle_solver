@@ -46,17 +46,17 @@ class startPage():
     def show_us(self):
         font_powered = pygame.font.Font("asserts/FerroRosso.ttf", 30)
         font_names = pygame.font.Font("asserts/arial_narrow_7.ttf", 20)
-        names = "1-mohamed salama\n\
-2-mohamed aiad\n\
-3-ahmed abdallah\n\
-4-michael samir\n"
-        text_powered = font_powered.render("Powered by:", True, (0,0,0))
+        names = "1-Mohamed Salama\n\
+2-Mohamed Aiad\n\
+3-Ahmed Abdallah\n\
+4-Michael Samir\n"
+        text_powered = font_powered.render("Powered by:", True, (100,200,255))
         self.screen.blit(text_powered,(WIDTH/1.4,HEIGHT/1.1-30,WIDTH,50))
         self.blit_text(self.screen, names, (WIDTH/1.4,HEIGHT/1.1), font_names, (0,0,0))
 
     def show_rules(self):
         font_rules = pygame.font.Font("asserts/FerroRosso.ttf", 40)
-        font_text = pygame.font.Font("asserts/arial_narrow_7.ttf", 25)
+        font_text = pygame.font.Font("asserts/times new roman.ttf", 25)
 
         text = "Hi dude this is our 8 puzzle game enjoy it\n\
 first press space or the \'play\' button\n\
@@ -73,9 +73,9 @@ The n-puzzle is a classical problem for modelling algorithms involving heuristic
         self.screen.blit(puzzle_image, (WIDTH/2-puzzle_image.get_width()/2,HEIGHT-puzzle_image.get_height()-175))
 
 
-        text_rules = font_rules.render("Rules:", True, (0,0,0))
-        self.screen.blit(text_rules,(10,HEIGHT/4-50,WIDTH,50))
-        self.blit_text(self.screen, text, (10,HEIGHT/4), font_text, (255,255,255))
+        text_rules = font_rules.render("Rules:", True,  (100,200,255))
+        self.screen.blit(text_rules,(10,HEIGHT/7,WIDTH,50))
+        self.blit_text(self.screen, text, (10,HEIGHT/7+50), font_text, (255,255,255))
 
     
     def blit_text(self, surface, text, pos, font, color=pygame.Color('black')):

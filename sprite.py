@@ -13,7 +13,11 @@ class Tile(pygame.sprite.Sprite):
         self.x, self.y = x, y
         self.text = text
         self.rect = self.image.get_rect()
-        if self.text != "empty":
+
+
+        if(self.text == ""):
+            self.image.fill(OFFWHITE)
+        elif self.text != "empty":
             self.font = pygame.font.SysFont("Consolas", 50)
             font_surface = self.font.render(self.text, True, BLACK)
             self.image.fill(WHITE)
@@ -23,6 +27,7 @@ class Tile(pygame.sprite.Sprite):
             self.image.blit(font_surface, (draw_x, draw_y))
         else:
             self.image.fill(BGCOLOUR)
+
 
     def update(self):
         self.rect.x = self.x * TILESIZE + WIDTH/2-(GAME_SIZE * TILESIZE)/2
@@ -46,13 +51,17 @@ class Tile(pygame.sprite.Sprite):
 
 
 class UIElement:
-    def __init__(self, x, y, text):
+    def __init__(self, x, y, text, color):
         self.x, self.y = x, y
         self.text = text
+        self.color = color
+
+    def set_color(self, color):
+        self.color = color
 
     def draw(self, screen):
         font = pygame.font.SysFont("Consolas", 30)
-        text = font.render(self.text, True, WHITE)
+        text = font.render(self.text, True, self.color)
         screen.blit(text, (self.x, self.y))
 
 

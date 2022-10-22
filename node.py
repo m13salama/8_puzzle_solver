@@ -8,6 +8,14 @@ class node:
     state = []
 
     def ValidateInput(self,intial):
+        for i in range(3):
+            for j in range(3):
+                try:
+                    intial[i][j] = int(intial[i][j])
+                except:
+                    return False
+                
+
         set = {intial[0][0]}
         for i in range(3):
             for j in range(3):
@@ -17,7 +25,7 @@ class node:
                     return False
         
         if len(set) == 9:
-            return True
+            return intial
         else:
             return False
         
