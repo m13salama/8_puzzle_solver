@@ -217,8 +217,10 @@ class gamePage():
                         self.change_algorithm("A*")
                     if(event.key == pygame.K_m):
                         self.algorithm.set_heuristic("manhattan")
+                        print("manhattan")
                     if(event.key == pygame.K_e):
                         self.algorithm.set_heuristic("euclidean")
+                        print("euclidean")
             
             for button in self.buttons_list:
                 button.check_click()
