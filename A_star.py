@@ -134,6 +134,13 @@ class A_star_search:
             s,p = self.parent[i]
             if(state == s): return p     
 
+    def write_path_file(self,path):
+        worker_file = open("asserts/AStar_path.txt","w")
+        for i in range(len(path)):
+            temp = path[i]
+            worker_file.write(f'{i+1} {temp} \n')
+        worker_file.close()          
+
     # this function is used to solve the 8 puzzle game use the given heuristic
     def solve(self,initial_state):
         
@@ -157,7 +164,9 @@ class A_star_search:
             # check if the current state is the goal state
             if(state == self.goal_state):
                 self.number_of_expanded_nodes = len(explored)
-                return self.get_final_path()
+                path = self.get_final_path()
+                self.write_path_file(path)
+                return path
 
             g+=1
             if(g > self.depth_of_search_tree): self.depth_of_search_tree = g
@@ -173,5 +182,6 @@ class A_star_search:
                     heapq.heappush(frontier,(cost,g,children[i]))
         
         return []
+
 
 
