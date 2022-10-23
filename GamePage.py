@@ -1,4 +1,3 @@
-from os import wait
 import pygame
 import random
 import time
@@ -80,6 +79,7 @@ class gamePage():
         if(res == False):
             self.wrong_input = True
         else:
+            self.wrong_input = False
             self.start_game = True
             self.tiles_grid = res
             self.elapsed_time = 0
@@ -179,6 +179,7 @@ class gamePage():
         self.start_show_result = False
         self.show_result_buttons = False
         self.input_mode = False
+        self.Solvable = True
         if len(self.buttons_list) > 4 :
             self.buttons_list.pop()
         self.button_shuffle.enable()
@@ -191,9 +192,6 @@ class gamePage():
                 pygame.quit()
                 exit(0)
             if event.type == pygame.KEYDOWN:
-                if(event.key == pygame.K_SPACE):
-                    print("a7aaaaaaaa")
-                
                 if(self.input_mode):
                     keys = list(pygame.key.get_pressed())
                     index = keys.index(1)
@@ -403,13 +401,11 @@ class gamePage():
             UIElement(10, 600, "No. of steps: %d" % len(self.path), WHITE).draw(self.screen)
             UIElement(10, 630, "No. of expanded nodes: %d" % self.algorithm.number_of_expanded_nodes, WHITE).draw(self.screen)
             UIElement(10, 660, "Search depth: %d" % self.algorithm.depth_of_search_tree, WHITE).draw(self.screen)
-            UIElement(10, 690, "YOU WIN 555555555 !!!!!", WHITE).draw(self.screen)
 
         if(self.wrong_input):
             UIElement(10, 600, "Wrong board please try again", WHITE).draw(self.screen)
         if(not self.Solvable):
             UIElement(10, 600, "board is not solvable", WHITE).draw(self.screen)
-        # UIElement(10, 550, "Press A for A*, D for dfs, B for bfs").draw(self.screen)
         # if(self.win):
         #     UIElement(10, 600, "YOU WIN 555555555 !!!!!").draw(self.screen)
         pygame.display.flip()
