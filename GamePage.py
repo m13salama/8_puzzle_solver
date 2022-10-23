@@ -27,6 +27,9 @@ class gamePage():
         self.buttons_list = [self.button_solve,self.button_shuffle,self.button_reset, self.button_input]
         self.result_buttons_list = [self.button_pause,self.button_next,self.button_previous,self.button_resume]
 
+        self.expanded_nodes = 0
+        self.search_depth = 0
+
         self.shuffle_counter = 0
         self.show_time = 0
         self.start_shuffle = False
@@ -77,7 +80,11 @@ class gamePage():
     def done_input(self):
         res = self.node.ValidateInput(self.input_grid)
         if(res == False):
+            self.Solvable = True
             self.wrong_input = True
+        elif(not self.node.isSolvable(res)):
+            self.Solvable = False
+            self.wrong_input = False
         else:
             self.wrong_input = False
             self.start_game = True
@@ -90,17 +97,8 @@ class gamePage():
             self.buttons_list.pop()
             self.button_solve.enable()
             self.button_shuffle.enable()
-            # if(self.node.isSolvable(res)):
-            #     self.win = False
-            #     self.start_game = True
-            # else:
-            #     self.notSolvable = True
 
     def solve(self):
-        self.Solvable = self.node.isSolvable(self.tiles_grid)
-        if(not self.Solvable):
-            return 
-
         self.elapsed_time = time.time()
         self.path = self.algorithm.solve(self.tiles_grid)
         self.elapsed_time = time.time()-self.elapsed_time
@@ -109,6 +107,8 @@ class gamePage():
         self.current_step = -1
         self.resume()
         self.show_result_buttons = True
+        self.expanded_nodes = self.algorithm.number_of_expanded_nodes
+        self.search_depth = self.algorithm.depth_of_search_tree
         print("expanded nodes: ", self.algorithm.number_of_expanded_nodes)
         print("path length: ",len(self.path))
         self.button_solve.disable()
@@ -201,23 +201,24 @@ class gamePage():
                         self.textC += event.unicode # adds letter
                     self.input_grid[self.selected[0]][self.selected[1]] = str(self.textC)
                     self.draw_tiles(self.input_grid)
-                    
-                if(event.key == pygame.K_d):
-                    print("dfs")
-                    self.selected_algo = "dfs"
-                    self.change_algorithm("DFS")
-                if(event.key == pygame.K_b):
-                    print("bfs")
-                    self.selected_algo = "bfs"
-                    self.change_algorithm("BFS")
-                if(event.key == pygame.K_a):
-                    print("A*")
-                    self.selected_algo = "a*"
-                    self.change_algorithm("A*")
-                if(event.key == pygame.K_m):
-                    self.algorithm.set_heuristic("manhattan")
-                if(event.key == pygame.K_e):
-                    self.algorithm.set_heuristic("euclidean")
+
+                if(not self.input_mode):   
+                    if(event.key == pygame.K_d):
+                        print("dfs")
+                        self.selected_algo = "dfs"
+                        self.change_algorithm("DFS")
+                    if(event.key == pygame.K_b):
+                        print("bfs")
+                        self.selected_algo = "bfs"
+                        self.change_algorithm("BFS")
+                    if(event.key == pygame.K_a):
+                        print("A*")
+                        self.selected_algo = "a*"
+                        self.change_algorithm("A*")
+                    if(event.key == pygame.K_m):
+                        self.algorithm.set_heuristic("manhattan")
+                    if(event.key == pygame.K_e):
+                        self.algorithm.set_heuristic("euclidean")
             
             for button in self.buttons_list:
                 button.check_click()
@@ -232,6 +233,8 @@ class gamePage():
                     for col, tile in enumerate(tiles):
                         if tile.click(mouse_x, mouse_y):
                             if(self.input_mode):
+                                if(self.input_grid[self.selected[0]][self.selected[1]] == ""):
+                                    self.input_grid[self.selected[0]][self.selected[1]] = 0
                                 self.selected = row, col
                                 self.textC = ""
                                 self.input_grid[row][col] = ""
@@ -316,14 +319,6 @@ class gamePage():
         self.start_game = False
         self.draw_tiles()
 
-    def run(self):
-        self.playing = True
-        while self.playing:
-            self.clock.tick(FPS)
-            self.events()
-            self.update()
-            self.draw()
-
     def update(self):
         if self.start_game:
             if self.tiles_grid == self.tiles_grid_completed:
@@ -399,8 +394,8 @@ class gamePage():
 
         if(self.start_show_result):
             UIElement(10, 600, "No. of steps: %d" % len(self.path), WHITE).draw(self.screen)
-            UIElement(10, 630, "No. of expanded nodes: %d" % self.algorithm.number_of_expanded_nodes, WHITE).draw(self.screen)
-            UIElement(10, 660, "Search depth: %d" % self.algorithm.depth_of_search_tree, WHITE).draw(self.screen)
+            UIElement(10, 630, "No. of expanded nodes: %d" %self.expanded_nodes , WHITE).draw(self.screen)
+            UIElement(10, 660, "Search depth: %d" % self.search_depth, WHITE).draw(self.screen)
 
         if(self.wrong_input):
             UIElement(10, 600, "Wrong board please try again", WHITE).draw(self.screen)
