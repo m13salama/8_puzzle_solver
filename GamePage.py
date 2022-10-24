@@ -15,6 +15,7 @@ class gamePage():
         self.screen = screen
         self.font = pygame.font.Font(None,30)
 
+        #buttons in the game
         self.button_input = Button('Input',self.font,button_width,button_height,(WIDTH/2+5,HEIGHT-100),5,self.take_input)
         self.button_done = Button('Done',self.font,button_width,button_height,(WIDTH/2+button_width+7.5,550),5,self.done_input)
         self.button_solve = Button('Solve',self.font,button_width,button_height,(WIDTH/2-button_width-10,HEIGHT-100),5,self.solve)
@@ -27,33 +28,35 @@ class gamePage():
         self.buttons_list = [self.button_solve,self.button_shuffle,self.button_reset, self.button_input]
         self.result_buttons_list = [self.button_pause,self.button_next,self.button_previous,self.button_resume]
 
+        #variables bs kda
         self.expanded_nodes = 0
         self.search_depth = 0
-
         self.shuffle_counter = 0
         self.show_time = 0
-        self.start_shuffle = False
         self.previous_choice = ""
-        self.start_game = False
-        self.start_timer = False
         self.elapsed_time = 0
-        self.current = False
-        self.win = False
-        self.start_show_result = False
-        self.pause_show_result = False
-        self.show_result_buttons = False
+        self.node = node()
+        self.input_grid = [[0,0,0],[0,0,0],[0,0,0]]
+        self.selected = 0,0
+        self.textC = ""
         self.path = [[[]]]
         self.current_step = -1
         self.high_score = float(self.get_high_scores()[0])
         self.algorithm = A_star_search()
         self.selected_algo = "a*"
+
+        #alot of flags but believe me all of them are important
+        self.start_shuffle = False
+        self.start_game = False
+        self.start_timer = False
+        self.current = False
+        self.win = False
+        self.start_show_result = False
+        self.pause_show_result = False
+        self.show_result_buttons = False
         self.input_mode = False
-        self.input_grid = [[0,0,0],[0,0,0],[0,0,0]]
-        self.selected = 0,0
-        self.textC = ""
         self.wrong_input = False
         self.Solvable = True
-        self.node = node()
 
     def Factory(self, input ="DFS"):   
         
@@ -65,6 +68,7 @@ class gamePage():
         }   
         return localizers[input]()
 
+    #get the high score time from the file in asserts
     def get_high_scores(self):
         with open("asserts/high_score.txt", "r") as file:
             scores = file.read().splitlines()
