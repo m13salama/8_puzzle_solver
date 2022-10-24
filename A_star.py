@@ -21,7 +21,8 @@ class A_star_search:
         self.depth_of_search_tree = 0 
         self.number_of_expanded_nodes=0    
         self.set_heuristic("manhattan")      
-  
+   
+
     # get all the children of any state
     def get_children(self,state):
         temp_state = copy.deepcopy(state)
@@ -35,7 +36,7 @@ class A_star_search:
                         temp = temp_state[i+1][j]
                         temp_state[i+1][j] = 0
                         temp_state[i][j] = temp
-                        res.append(temp_state)
+                        res.append((temp_state,1))
                         temp_state = copy.deepcopy(state)
 
                     # move down
@@ -43,7 +44,7 @@ class A_star_search:
                         temp = temp_state[i-1][j]
                         temp_state[i-1][j] = 0
                         temp_state[i][j] = temp
-                        res.append(temp_state)
+                        res.append((temp_state,2))
                         temp_state = copy.deepcopy(state)
 
                     # move right
@@ -51,7 +52,7 @@ class A_star_search:
                         temp = temp_state[i][j+1]
                         temp_state[i][j+1] = 0
                         temp_state[i][j] = temp
-                        res.append(temp_state)
+                        res.append((temp_state,3))
                         temp_state = copy.deepcopy(state)    
 
                     # move left
@@ -59,7 +60,7 @@ class A_star_search:
                         temp = temp_state[i][j-1]
                         temp_state[i][j-1] = 0
                         temp_state[i][j] = temp
-                        res.append(temp_state)
+                        res.append((temp_state,4))
                         temp_state = copy.deepcopy(state)    
 
                     return res 
@@ -120,7 +121,7 @@ class A_star_search:
             final_state.append(cur_state)
             cur_state = parentMap[cur_state]
         return final_state
-                
+              
 
     def write_path_file(self,path):
         worker_file = open("AStar_path.txt","w")
@@ -138,20 +139,18 @@ class A_star_search:
         # to store the states
         frontier = []
         frontier_set = set()  # to check if the state is in frontier or not in O(1), no need to remove from it because it will be in explored
-        heapq.heappush(frontier,(cost,g,initial_state))
+        heapq.heappush(frontier,(cost,0,g,initial_state))
         frontier_set.add(str(initial_state))
         
         parentMap = {} # to store the parents of each state
         parentMap[str(initial_state)] = str('0')
         
-
-        # store the nodes expanded
-        explored = set()
+        explored = set() # store the nodes expanded
 
         while(len(frontier) != 0):
             
             # pop the first state in the frontier(the lowest cost)
-            cost,g,state = heapq.heappop(frontier)
+            cost,tie_breaker,g,state = heapq.heappop(frontier)
             explored.add(str(state))
 
             # check if the current state is the goal state
@@ -169,9 +168,10 @@ class A_star_search:
 
             # check for all child if it's not explored and not in the frontier then add it to the frontier
             for i in range (len(children)):
-                if(not(str(children[i]) in frontier_set) and not(str(children[i]) in explored)):
-                    cost = g + self.working_heuristic(children[i])
-                    parentMap[str(children[i])] = str(state)
-                    heapq.heappush(frontier,(cost,g,children[i]))
+                child,tie_breaker = children[i]
+                if(not(str(child) in frontier_set) and not(str(child) in explored)):
+                    cost = g + self.working_heuristic(child)
+                    parentMap[str(child)] = str(state)
+                    heapq.heappush(frontier,(cost,tie_breaker,g,child))
         
         return []
