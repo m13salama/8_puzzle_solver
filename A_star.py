@@ -20,18 +20,8 @@ class A_star_search:
         self.heuristic = ""  
         self.depth_of_search_tree = 0 
         self.number_of_expanded_nodes=0    
-        self.parent = []
         self.set_heuristic("manhattan")      
-
-    # check if the state is in frontier or not
-    def In_frontier(self,frontier,state):
-        for i in range (len(frontier)):
-            cost,g,cur_state = frontier[i]
-            if(cur_state == state): return TRUE
-
-        return FALSE    
-
-
+  
     # get all the children of any state
     def get_children(self,state):
         temp_state = copy.deepcopy(state)
@@ -39,13 +29,8 @@ class A_star_search:
         for i in range(3):
             for j in range(3):
                 if(state[i][j] == 0):
-                    if(i-1 >=0): 
-                        temp = temp_state[i-1][j]
-                        temp_state[i-1][j] = 0
-                        temp_state[i][j] = temp
-                        res.append(temp_state)
-                        temp_state = copy.deepcopy(state)
 
+                    #move up
                     if(i+1 < 3): 
                         temp = temp_state[i+1][j]
                         temp_state[i+1][j] = 0
@@ -53,19 +38,29 @@ class A_star_search:
                         res.append(temp_state)
                         temp_state = copy.deepcopy(state)
 
+                    # move down
+                    if(i-1 >=0): 
+                        temp = temp_state[i-1][j]
+                        temp_state[i-1][j] = 0
+                        temp_state[i][j] = temp
+                        res.append(temp_state)
+                        temp_state = copy.deepcopy(state)
+
+                    # move right
+                    if(j+1 < 3): 
+                        temp = temp_state[i][j+1]
+                        temp_state[i][j+1] = 0
+                        temp_state[i][j] = temp
+                        res.append(temp_state)
+                        temp_state = copy.deepcopy(state)    
+
+                    # move left
                     if(j-1 >=0): 
                         temp = temp_state[i][j-1]
                         temp_state[i][j-1] = 0
                         temp_state[i][j] = temp
                         res.append(temp_state)
                         temp_state = copy.deepcopy(state)    
-
-                    if(j+1 < 3): 
-                        temp = temp_state[i][j+1]
-                        temp_state[i][j+1] = 0
-                        temp_state[i][j] = temp
-                        res.append(temp_state)
-                        temp_state = copy.deepcopy(state)
 
                     return res 
 
@@ -92,7 +87,6 @@ class A_star_search:
         res =0
         for i in range(3):
             for j in range(3):
-                if(state[i][j] == 0): res += (i-0) + (j-0)
                 if(state[i][j] == 1): res += (i-0) + abs(j-1)
                 if(state[i][j] == 2): res += (i-0) + abs(j-2)
                 if(state[i][j] == 3): res += abs(i-1) + (j-0)
@@ -108,7 +102,6 @@ class A_star_search:
         res =0
         for i in range(3):
             for j in range(3):
-                if(state[i][j] == 0): res += math.sqrt((i-0)**2 + (j-0)**2)
                 if(state[i][j] == 1): res += math.sqrt((i-0)**2 + (j-1)**2)
                 if(state[i][j] == 2): res += math.sqrt((i-0)**2 + (j-2)**2)
                 if(state[i][j] == 3): res += math.sqrt((i-1)**2 + (j-0)**2)
@@ -120,22 +113,17 @@ class A_star_search:
         return res  
 
     # this function is used to get the final path and return array of string
-    def get_final_path(self):
+    def get_final_path(self,parentMap):
         final_state = []
-        cur_state = self.goal_state
-        while(cur_state != 0):
-            final_state.append(str(cur_state))
-            cur_state = self.get_parent(cur_state)
+        cur_state = str(self.goal_state)
+        while(cur_state != '0'):
+            final_state.append(cur_state)
+            cur_state = parentMap[cur_state]
         return final_state
-            
-    # this function is used to get the parent of a state 
-    def get_parent(self,state):  
-        for i in range(len(self.parent)):
-            s,p = self.parent[i]
-            if(state == s): return p     
+                
 
     def write_path_file(self,path):
-        worker_file = open("asserts/AStar_path.txt","w")
+        worker_file = open("AStar_path.txt","w")
         for i in range(len(path)):
             temp = path[i]
             worker_file.write(f'{i+1} {temp} \n')
@@ -149,8 +137,13 @@ class A_star_search:
 
         # to store the states
         frontier = []
+        frontier_set = set()  # to check if the state is in frontier or not in O(1), no need to remove from it because it will be in explored
         heapq.heappush(frontier,(cost,g,initial_state))
-        self.parent.append((initial_state,0))
+        frontier_set.add(str(initial_state))
+        
+        parentMap = {} # to store the parents of each state
+        parentMap[str(initial_state)] = str('0')
+        
 
         # store the nodes expanded
         explored = set()
@@ -164,7 +157,7 @@ class A_star_search:
             # check if the current state is the goal state
             if(state == self.goal_state):
                 self.number_of_expanded_nodes = len(explored)
-                path = self.get_final_path()
+                path = self.get_final_path(parentMap)
                 self.write_path_file(path)
                 return path
 
@@ -176,12 +169,9 @@ class A_star_search:
 
             # check for all child if it's not explored and not in the frontier then add it to the frontier
             for i in range (len(children)):
-                if((self.In_frontier(frontier,children[i]) == FALSE) and not(str(children[i]) in explored)):
+                if(not(str(children[i]) in frontier_set) and not(str(children[i]) in explored)):
                     cost = g + self.working_heuristic(children[i])
-                    self.parent.append((children[i],state))
+                    parentMap[str(children[i])] = str(state)
                     heapq.heappush(frontier,(cost,g,children[i]))
         
         return []
-
-
-
