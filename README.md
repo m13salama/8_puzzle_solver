@@ -14,4 +14,9 @@ our goal was to make an AI agent to solve it so we implemented this agent using 
 *  time & no. of moves analysis.
 
 ## Screenshots:
-### Adding Users
+### Welcome page:
+![Welcome](https://github.com/m13salama/8_puzzle_solver/blob/main/screenShots/welcome.png?raw=true)
+### solved board:
+![SignIn](https://github.com/MichaelSamir75/Book-store/blob/main/ScreenShots/solved.png?raw=true)
+### solving mode:
+![SignIn](https://github.com/m13salama/8_puzzle_solver/blob/main/screenShots/solving.png?raw=true)
